@@ -7,11 +7,12 @@ clock = pygame.time.Clock()
 tela = pygame.display.set_mode(tamanho)
 pygame.display.set_caption("Space Marker")
 branco = (255, 255, 255)
+fonte = pygame.font.SysFont("arial", 20)
 
 # IMAGENS
 background = pygame.image.load("assets/background.jpg")
 
-marcacoes = []
+estrelas = {}
 
 while True:
 
@@ -19,20 +20,30 @@ while True:
     tela.fill(branco)
     tela.blit(background, (0, 0))
 
+    posicoes = list(estrelas.keys())
+
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             quit()
 
         elif evento.type == pygame.MOUSEBUTTONDOWN:
             posicao = pygame.mouse.get_pos()
-            marcacoes.append(posicao)
+            nomeDaEstrela = simpledialog.askstring("Space", "Nome da Estrela: ")
+            if nomeDaEstrela == '':
+                 nomeDaEstrela = "Desconhecido"
+            estrelas[posicao] = nomeDaEstrela
+            print(estrelas)
 
-    for marcacao in marcacoes:
-            pygame.draw.circle(tela, branco, marcacao, 2, 0)
+    # MARCAÇÕES
+    for coordenada, nome in estrelas.items():
+            pygame.draw.circle(tela, branco, coordenada, 2, 0)
+            texto = fonte.render(nome, True, branco)
+            tela.blit(texto, coordenada)
 
-    if len(marcacoes) > 1:
-        for i in range(len(marcacoes) - 1):
-            pygame.draw.line(tela, branco, marcacoes[i], marcacoes[i + 1], 1)
+    # LINHAS
+    if len(estrelas) > 1:
+        for i in range(len(posicoes) - 1):
+            pygame.draw.line(tela, branco, posicoes[i], posicoes[i + 1], 1)
         
 
     pygame.display.update()
