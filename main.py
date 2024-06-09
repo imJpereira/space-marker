@@ -1,37 +1,6 @@
 import pygame
 from tkinter import simpledialog
-
-def desenharMarcadoresEstrelas():
-    for coordenada, nome in estrelas.items():
-            pygame.draw.circle(tela, branco, coordenada, 2, 0)
-            if nome == '':
-                texto = fonte.render(f"Desconhecido{coordenada}", True, branco)
-            else:
-                texto = fonte.render(nome, True, branco)
-            tela.blit(texto, coordenada)
-
-def desenharLinhasEntreEstrelas():
-    if len(estrelas) > 1:
-        for i in range(len(posicoes) - 1):
-            pygame.draw.line(tela, branco, posicoes[i], posicoes[i + 1], 1)
-
-def salvarEstrelasArquivo():
-    estrelasDB = open("estrelasDB.txt", "w")
-    estrelasDB.write(str(estrelas))
-    estrelasDB.close()
-
-def carregarEstrelasArquivo():
-    estrelasDB = open("estrelasDB.txt", "r")
-    text = estrelasDB.read()
-    estrelasDB.close()
-    return eval(text)
-
-def deletarEstrelas():
-    estrelasDB = open("estrelasDB.txt", "w")
-    estrelasDB.write("")
-    estrelasDB.close()
-
-#######################################
+from modules.functions import salvarDados, carregarDados, deletarDados
 
 pygame.init()
 tamanho = (1000, 563)
@@ -39,16 +8,14 @@ clock = pygame.time.Clock()
 tela = pygame.display.set_mode(tamanho)
 pygame.display.set_caption("Space Marker")
 branco = (255, 255, 255)
-fonte = pygame.font.SysFont("arial", 20)
-
-# IMAGENS
+icone  = pygame.image.load("assets/icon.jpg")
+pygame.display.set_icon(icone)
+fonte = pygame.font.SysFont("sans serif", 20)
 background = pygame.image.load("assets/background.jpg")
 
 estrelas = {}
-
 while True:
 
-    # FUNDO
     tela.fill(branco)
     tela.blit(background, (0, 0))
 
@@ -56,16 +23,16 @@ while True:
 
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
-            salvarEstrelasArquivo()
+            salvarDados(estrelas)
             quit()
 
         elif evento.type == pygame.KEYDOWN:
             if evento.key == pygame.K_F10:
-                salvarEstrelasArquivo()
+                salvarDados(estrelas)
             elif evento.key == pygame.K_F11:
-                estrelas = carregarEstrelasArquivo()
+                estrelas = carregarDados()
             elif evento.key == pygame.K_F12:
-                deletarEstrelas()
+                deletarDados()
                 estrelas = {}
 
         elif evento.type == pygame.MOUSEBUTTONDOWN:
@@ -82,8 +49,17 @@ while True:
     f12 = fonte.render("Pressione F12 para deletar os pontos", True, branco)
     tela.blit(f12, (10, 60))
 
-    desenharMarcadoresEstrelas()
-    desenharLinhasEntreEstrelas()
+    for coordenada, nome in estrelas.items():
+        pygame.draw.circle(tela, branco, coordenada, 2, 0)
+        if nome == '':
+            texto = fonte.render(f"Desconhecido{coordenada}", True, branco)
+        else:
+            texto = fonte.render(nome, True, branco)
+        tela.blit(texto, coordenada)
+    
+    if len(estrelas) > 1:
+        for i in range(len(posicoes) - 1):
+            pygame.draw.line(tela, branco, posicoes[i], posicoes[i + 1], 1)
 
     pygame.display.update()
     clock.tick(60)
